@@ -2,7 +2,7 @@ package com.tossdesu.shoppinglist.domain
 
 interface ShopListRepository {
 
-    fun addShopItem(shopItemId: Int)
+    fun addShopItem(shopItem: ShopItem)
 
     fun deleteShopItem(shopItemId: Int)
 
