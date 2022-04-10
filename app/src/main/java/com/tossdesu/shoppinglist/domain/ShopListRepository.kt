@@ -1,5 +1,8 @@
 package com.tossdesu.shoppinglist.domain
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+
 interface ShopListRepository {
 
     fun addShopItem(shopItem: ShopItem)
@@ -10,5 +13,5 @@ interface ShopListRepository {
 
     fun getShopItem(shopItemId: Int): ShopItem
 
-    fun getShopList(): List<ShopItem>
+    fun getShopList(): LiveData<List<ShopItem>>
 }

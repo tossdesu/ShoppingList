@@ -19,14 +19,12 @@ class MainActivity : AppCompatActivity() {
             Log.d("ActivityTest", it.toString())
         }
 
-        viewModel.getShopList()
-
-//        viewModel.shopList.value?.let {
-//            viewModel.deleteShopItem(it[0])
-//        }
+        viewModel.shopList.value?.let {
+            viewModel.deleteShopItem(it[9])
+        }
 
         viewModel.shopList.value?.let {
-            viewModel.editShopItem(it[0])
+            viewModel.changeEnabledState(it[8])
         }
 
     }

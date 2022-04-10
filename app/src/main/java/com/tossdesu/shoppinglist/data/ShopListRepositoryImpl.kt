@@ -1,12 +1,15 @@
 package com.tossdesu.shoppinglist.data
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.tossdesu.shoppinglist.domain.ShopItem
 import com.tossdesu.shoppinglist.domain.ShopListRepository
 
 object ShopListRepositoryImpl: ShopListRepository {
 
-    val shoppingList = mutableListOf<ShopItem>()
-    var autoIncrementId = 0
+    private val shopList = mutableListOf<ShopItem>()
+    private val shopListLiveData = MutableLiveData<List<ShopItem>>()
+    private var autoIncrementId = 0
 
     init {
         for (i in 0 until 10) {
@@ -18,26 +21,32 @@ object ShopListRepositoryImpl: ShopListRepository {
         if (shopItem.id == ShopItem.UNDEFINED_ID) {
             shopItem.id = autoIncrementId++
         }
-        shoppingList.add(shopItem)
+        shopList.add(shopItem)
+        updateList()
     }
 
     override fun deleteShopItem(shopItem: ShopItem) {
-        shoppingList.remove(shopItem)
+        shopList.remove(shopItem)
+        updateList()
     }
 
     override fun editShopItem(shopItem: ShopItem) {
         val oldShopItem = getShopItem(shopItem.id)
-        shoppingList.remove(oldShopItem)
+        shopList.remove(oldShopItem)
         addShopItem(shopItem)
     }
 
     override fun getShopItem(shopItemId: Int): ShopItem {
-        return shoppingList.find {
+        return shopList.find {
             it.id == shopItemId
         } ?: throw RuntimeException("ShopItem with id=$shopItemId not found")
     }
 
-    override fun getShopList(): List<ShopItem> {
-        return shoppingList.toList()
+    override fun getShopList(): LiveData<List<ShopItem>> {
+        return shopListLiveData
+    }
+
+    private fun updateList() {
+        shopListLiveData.value = shopList.toList()
     }
 }
