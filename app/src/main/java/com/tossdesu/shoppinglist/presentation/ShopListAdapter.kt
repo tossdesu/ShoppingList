@@ -17,6 +17,7 @@ class ShopListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             notifyDataSetChanged()
         }
     var setOnLongClickListener: ((ShopItem) -> Unit)? = null
+    var setOnClickListener: ((ShopItem) -> Unit)? = null
 
     class ShopItemEnabledHolder(val itemShopEnabledBinding: ItemShopEnabledBinding) :
         RecyclerView.ViewHolder(itemShopEnabledBinding.root) {
@@ -73,6 +74,9 @@ class ShopListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         view.setOnLongClickListener {
             setOnLongClickListener?.invoke(shopList[position])
             true
+        }
+        view.setOnClickListener {
+            setOnClickListener?.invoke(shopList[position])
         }
     }
 

@@ -51,5 +51,8 @@ class MainActivity : AppCompatActivity() {
         shopListAdapter.setOnLongClickListener = {
                 viewModel.changeEnabledState(it)
         }
+        shopListAdapter.setOnClickListener = {
+            Log.d("setOnClickListener", "Item id = ${it.id}")
+        }
     }
 }
