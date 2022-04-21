@@ -4,20 +4,20 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.ViewModelProvider
-import com.tossdesu.shoppinglist.R
+import androidx.recyclerview.widget.ItemTouchHelper
+import com.google.android.material.snackbar.Snackbar
 import com.tossdesu.shoppinglist.databinding.ActivityMainBinding
-import com.tossdesu.shoppinglist.domain.ShopItem
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var mainBinding: ActivityMainBinding
+    lateinit var binding: ActivityMainBinding
     lateinit var viewModel: MainViewModel
     lateinit var shopListAdapter: ShopListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mainBinding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(mainBinding.root)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         initAdapter()
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initAdapter() {
         shopListAdapter = ShopListAdapter()
-        mainBinding.rvShopList.apply {
+        binding.rvShopList.apply {
             adapter = shopListAdapter
             recycledViewPool.setMaxRecycledViews(
                 ShopListAdapter.VIEW_TYPE_ENABLED,
@@ -49,10 +49,22 @@ class MainActivity : AppCompatActivity() {
             )
         }
         shopListAdapter.setOnLongClickListener = {
-                viewModel.changeEnabledState(it)
+            viewModel.changeEnabledState(it)
         }
         shopListAdapter.setOnClickListener = {
             Log.d("setOnClickListener", "Item id = ${it.id}")
         }
+
+        val swipeToDeleteCallback = SwipeToDelete { positionForRemove: Int ->
+            val shopItem = shopListAdapter.shopList[positionForRemove]
+            viewModel.deleteShopItem(shopItem)
+//            binding.rvShopList.adapter?.notifyItemRemoved(positionForRemove)
+
+            Snackbar.make(binding.rvShopList, "Item was deleted", Snackbar.LENGTH_LONG)
+                .setAction("Undo") {
+                    viewModel.addShopItem(shopItem)
+                }.show()
+        }
+        ItemTouchHelper(swipeToDeleteCallback).attachToRecyclerView(binding.rvShopList)
     }
 }
