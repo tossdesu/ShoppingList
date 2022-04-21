@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.tossdesu.shoppinglist.databinding.ActivityMainBinding
 
@@ -47,24 +48,47 @@ class MainActivity : AppCompatActivity() {
                 ShopListAdapter.VIEW_TYPE_DISABLED,
                 ShopListAdapter.MAX_POOL_SIZE
             )
+            setupSwipeListener(this)
         }
-        shopListAdapter.setOnLongClickListener = {
-            viewModel.changeEnabledState(it)
+        setupLongClickListener()
+        setupClickListener()
+    }
+
+    private fun setupSwipeListener(recyclerView: RecyclerView) {
+        val callback = object : ItemTouchHelper.SimpleCallback(
+            ItemTouchHelper.ACTION_STATE_IDLE,
+            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+        ) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ) = false
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val shopItem = shopListAdapter.shopList[viewHolder.adapterPosition]
+                viewModel.deleteShopItem(shopItem)
+
+                Snackbar.make(recyclerView, "Item was deleted", Snackbar.LENGTH_LONG)
+                    .setAction("Undo") {
+                        viewModel.addShopItem(shopItem)
+                    }.show()
+            }
+
+            override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder) = 0.8F
         }
+        ItemTouchHelper(callback).attachToRecyclerView(recyclerView)
+    }
+
+    private fun setupClickListener() {
         shopListAdapter.setOnClickListener = {
             Log.d("setOnClickListener", "Item id = ${it.id}")
         }
+    }
 
-        val swipeToDeleteCallback = SwipeToDelete { positionForRemove: Int ->
-            val shopItem = shopListAdapter.shopList[positionForRemove]
-            viewModel.deleteShopItem(shopItem)
-//            binding.rvShopList.adapter?.notifyItemRemoved(positionForRemove)
-
-            Snackbar.make(binding.rvShopList, "Item was deleted", Snackbar.LENGTH_LONG)
-                .setAction("Undo") {
-                    viewModel.addShopItem(shopItem)
-                }.show()
+    private fun setupLongClickListener() {
+        shopListAdapter.setOnLongClickListener = {
+            viewModel.changeEnabledState(it)
         }
-        ItemTouchHelper(swipeToDeleteCallback).attachToRecyclerView(binding.rvShopList)
     }
 }
