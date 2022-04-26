@@ -23,17 +23,8 @@ class MainActivity : AppCompatActivity() {
         initAdapter()
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel.shopList.observe(this) {
-            shopListAdapter.shopList = it
+            shopListAdapter.submitList(it)
         }
-
-//        viewModel.shopList.value?.let {
-//            viewModel.deleteShopItem(it[9])
-//        }
-//
-//        viewModel.shopList.value?.let {
-//            viewModel.changeEnabledState(it[8])
-//        }
-
     }
 
     private fun initAdapter() {
@@ -66,7 +57,7 @@ class MainActivity : AppCompatActivity() {
             ) = false
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val shopItem = shopListAdapter.shopList[viewHolder.adapterPosition]
+                val shopItem = shopListAdapter.currentList[viewHolder.adapterPosition]
                 viewModel.deleteShopItem(shopItem)
 
                 Snackbar.make(recyclerView, "Item was deleted", Snackbar.LENGTH_LONG)
@@ -82,13 +73,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupClickListener() {
         shopListAdapter.setOnClickListener = {
-            Log.d("setOnClickListener", "Item id = ${it.id}")
+            Log.d("setOnClickListener", "Item id = $it")
         }
     }
 
     private fun setupLongClickListener() {
         shopListAdapter.setOnLongClickListener = {
             viewModel.changeEnabledState(it)
+            Log.d("setOnLongClickListener", "ShopList Item id = $it")
         }
     }
 }
