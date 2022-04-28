@@ -1,8 +1,7 @@
 package com.tossdesu.shoppinglist.presentation
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -24,6 +23,11 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel.shopList.observe(this) {
             shopListAdapter.submitList(it)
+        }
+
+        binding.fbAddItem.setOnClickListener {
+            val intent = ShopItemActivity.newIntentAddShopItem(this)
+            startActivity(intent)
         }
     }
 
@@ -73,14 +77,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupClickListener() {
         shopListAdapter.setOnClickListener = {
-            Log.d("setOnClickListener", "Item id = $it")
+            val intent = ShopItemActivity.newIntentEditShopItem(this, it.id)
+            startActivity(intent)
         }
     }
 
     private fun setupLongClickListener() {
         shopListAdapter.setOnLongClickListener = {
             viewModel.changeEnabledState(it)
-            Log.d("setOnLongClickListener", "ShopList Item id = $it")
         }
     }
 }
