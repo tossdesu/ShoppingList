@@ -1,7 +1,5 @@
 package com.tossdesu.shoppinglist.presentation
 
-import android.content.Context
-import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,7 +8,6 @@ import com.tossdesu.shoppinglist.domain.AddShopItemUseCase
 import com.tossdesu.shoppinglist.domain.EditShopItemUseCase
 import com.tossdesu.shoppinglist.domain.GetShopItemUseCase
 import com.tossdesu.shoppinglist.domain.ShopItem
-import java.lang.NumberFormatException
 
 class ShopItemViewModel : ViewModel() {
 
@@ -23,12 +20,15 @@ class ShopItemViewModel : ViewModel() {
     private val _errorInputName = MutableLiveData<Boolean>()
     val errorInputName: LiveData<Boolean>
         get() = _errorInputName
+
     private val _errorInputCount = MutableLiveData<Boolean>()
     val errorInputCount: LiveData<Boolean>
         get() = _errorInputCount
+
     private val _shopItem = MutableLiveData<ShopItem>()
     val shopItem: LiveData<ShopItem>
         get() = _shopItem
+
     private val _shouldCloseScreen = MutableLiveData<Unit>()
     val shouldCloseScreen: LiveData<Unit>
         get() = _shouldCloseScreen
