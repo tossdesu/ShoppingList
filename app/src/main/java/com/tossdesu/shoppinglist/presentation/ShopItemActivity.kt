@@ -14,93 +14,96 @@ import com.tossdesu.shoppinglist.domain.ShopItem
 class ShopItemActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityShopItemBinding
-    private lateinit var viewModel: ShopItemViewModel
     private var screenMode = MODE_UNDEFINED
     private var shopItemId = ShopItem.UNDEFINED_ID
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        binding = ActivityShopItemBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
+        binding = ActivityShopItemBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         parseIntent()
-        viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
+//        viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
         launchScreenMode()
-        addTextChangedListeners()
-        observeViewModel()
+//        addTextChangedListeners()
+//        observeViewModel()
     }
 
-    private fun observeViewModel() {
-        viewModel.errorInputName.observe(this) {
-            val message = if (it) {
-                getString(R.string.input_name_error)
-            } else {
-                null
-            }
-            binding.tilName.error = message
-        }
-        viewModel.errorInputCount.observe(this) {
-            val message = if (it) {
-                getString(R.string.input_count_error)
-            } else {
-                null
-            }
-            binding.tilCount.error = message
-        }
-        viewModel.shouldCloseScreen.observe(this) {
-            finish()
-        }
-    }
-
-    private fun addTextChangedListeners() {
-        binding.etName.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                viewModel.resetErrorInputName()
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-            }
-        })
-        binding.etCount.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                viewModel.resetErrorInputCount()
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-            }
-        })
-    }
+//    private fun observeViewModel() {
+//        viewModel.errorInputName.observe(this) {
+//            val message = if (it) {
+//                getString(R.string.input_name_error)
+//            } else {
+//                null
+//            }
+//            binding.tilName.error = message
+//        }
+//        viewModel.errorInputCount.observe(this) {
+//            val message = if (it) {
+//                getString(R.string.input_count_error)
+//            } else {
+//                null
+//            }
+//            binding.tilCount.error = message
+//        }
+//        viewModel.shouldCloseScreen.observe(this) {
+//            finish()
+//        }
+//    }
+//
+//    private fun addTextChangedListeners() {
+//        binding.etName.addTextChangedListener(object : TextWatcher {
+//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+//            }
+//
+//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+//                viewModel.resetErrorInputName()
+//            }
+//
+//            override fun afterTextChanged(s: Editable?) {
+//            }
+//        })
+//        binding.etCount.addTextChangedListener(object : TextWatcher {
+//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+//            }
+//
+//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+//                viewModel.resetErrorInputCount()
+//            }
+//
+//            override fun afterTextChanged(s: Editable?) {
+//            }
+//        })
+//    }
 
     private fun launchScreenMode() {
-        when (screenMode) {
-            MODE_ADD -> launchAddMode()
-            MODE_EDIT -> launchEditMode()
+        val fragment = when (screenMode) {
+            MODE_ADD -> ShopItemFragment.newInstanceAddItem()
+            MODE_EDIT -> ShopItemFragment.newInstanceEditItem(shopItemId)
+            else -> throw RuntimeException("Unknown param screen mode: $screenMode")
         }
+        supportFragmentManager.beginTransaction()
+            .add(R.id.shop_item_container, fragment)
+            .commit()
     }
 
-    private fun launchEditMode() {
-        viewModel.shopItem.observe(this) {
-            binding.etName.setText(it.name)
-            binding.etCount.setText(it.count.toString())
-        }
-        viewModel.getShopItem(shopItemId)
-
-        binding.buttonSave.setOnClickListener {
-            viewModel.editShopItem(binding.etName.text.toString(), binding.etCount.text.toString())
-        }
-    }
-
-    private fun launchAddMode() {
-        binding.buttonSave.setOnClickListener {
-            viewModel.addShopItem(binding.etName.text.toString(), binding.etCount.text.toString())
-        }
-    }
+//    private fun launchEditMode() {
+//        viewModel.shopItem.observe(this) {
+//            binding.etName.setText(it.name)
+//            binding.etCount.setText(it.count.toString())
+//        }
+//        viewModel.getShopItem(shopItemId)
+//
+//        binding.buttonSave.setOnClickListener {
+//            viewModel.editShopItem(binding.etName.text.toString(), binding.etCount.text.toString())
+//        }
+//    }
+//
+//    private fun launchAddMode() {
+//        binding.buttonSave.setOnClickListener {
+//            viewModel.addShopItem(binding.etName.text.toString(), binding.etCount.text.toString())
+//        }
+//    }
 
     private fun parseIntent() {
         if (!intent.hasExtra(EXTRA_MODE)) {
