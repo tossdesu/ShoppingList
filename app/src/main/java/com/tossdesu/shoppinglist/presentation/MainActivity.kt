@@ -2,10 +2,13 @@ package com.tossdesu.shoppinglist.presentation
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
+import com.tossdesu.shoppinglist.R
 import com.tossdesu.shoppinglist.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -13,11 +16,18 @@ class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
     lateinit var viewModel: MainViewModel
     lateinit var shopListAdapter: ShopListAdapter
+    private var shopItemFragmentContainer: FragmentContainerView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        shopItemFragmentContainer = binding.shopItemContainer
+
+//        if (savedInstanceState != null) {
+//            supportFragmentManager.popBackStack()
+//        }
 
         initAdapter()
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
@@ -26,9 +36,23 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.fbAddItem.setOnClickListener {
-            val intent = ShopItemActivity.newIntentAddShopItem(this)
-            startActivity(intent)
+            if (isScreenPortraitMode()) {
+                val intent = ShopItemActivity.newIntentAddShopItem(this)
+                startActivity(intent)
+            } else {
+                launchFragment(ShopItemFragment.newInstanceAddItem())
+            }
         }
+    }
+
+    private fun isScreenPortraitMode() = shopItemFragmentContainer == null
+
+    private fun launchFragment(fragment: Fragment) {
+        supportFragmentManager.popBackStack()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.shopItemContainer, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 
     private fun initAdapter() {
@@ -77,8 +101,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupClickListener() {
         shopListAdapter.setOnClickListener = {
-            val intent = ShopItemActivity.newIntentEditShopItem(this, it.id)
-            startActivity(intent)
+            if (isScreenPortraitMode()) {
+                val intent = ShopItemActivity.newIntentEditShopItem(this, it.id)
+                startActivity(intent)
+            } else {
+                launchFragment(ShopItemFragment.newInstanceEditItem(it.id))
+            }
         }
     }
 
