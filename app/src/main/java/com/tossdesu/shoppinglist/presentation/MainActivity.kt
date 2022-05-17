@@ -1,6 +1,8 @@
 package com.tossdesu.shoppinglist.presentation
 
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
@@ -11,15 +13,16 @@ import com.google.android.material.snackbar.Snackbar
 import com.tossdesu.shoppinglist.R
 import com.tossdesu.shoppinglist.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingCompleteListener {
 
-    lateinit var binding: ActivityMainBinding
+    private lateinit var binding: ActivityMainBinding
     lateinit var viewModel: MainViewModel
     lateinit var shopListAdapter: ShopListAdapter
     private var shopItemFragmentContainer: FragmentContainerView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d("LifecycleTest", "MainActivity -> CREATE")
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -43,6 +46,42 @@ class MainActivity : AppCompatActivity() {
                 launchFragment(ShopItemFragment.newInstanceAddItem())
             }
         }
+    }
+
+
+    override fun onStart() {
+        super.onStart()
+        Log.d("LifecycleTest", "MainActivity -> START")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("LifecycleTest", "MainActivity -> RESUME")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("LifecycleTest", "MainActivity -> PAUSE")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d("LifecycleTest", "MainActivity -> STOP")
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        Log.d("LifecycleTest", "MainActivity -> RESTART")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("LifecycleTest", "MainActivity -> DESTROY")
+    }
+
+    override fun onEditingComplete() {
+        supportFragmentManager.popBackStack()
+        Toast.makeText(this, "Complete", Toast.LENGTH_LONG).show()
     }
 
     private fun isScreenPortraitMode() = shopItemFragmentContainer == null

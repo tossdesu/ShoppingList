@@ -1,5 +1,6 @@
 package com.tossdesu.shoppinglist.presentation
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -15,14 +16,26 @@ import com.tossdesu.shoppinglist.domain.ShopItem
 
 class ShopItemFragment : Fragment() {
 
-    lateinit var binding: FragmentShopItemBinding
+    private lateinit var binding: FragmentShopItemBinding
     private lateinit var viewModel: ShopItemViewModel
+    private lateinit var onEditingCompleteListener: OnEditingCompleteListener
 
     private var screenMode: String = MODE_UNDEFINED
     private var shopItemId: Int = ShopItem.UNDEFINED_ID
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        Log.d("LifecycleTest", "ShopItemFragment -> ATTACH")
+        if (context is OnEditingCompleteListener) {
+            onEditingCompleteListener = context
+        } else {
+            throw RuntimeException("Activity must implement CompleteEditingItemListener")
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d("LifecycleTest", "ShopItemFragment -> CREATE")
         parseParams()
     }
 
@@ -31,18 +44,59 @@ class ShopItemFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        Log.d("LifecycleTest", "ShopItemFragment -> CREATE_VIEW")
         binding = FragmentShopItemBinding.inflate(inflater)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.d("LifecycleTest", "ShopItemFragment -> VIEW_CREATED")
         viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
         launchScreenMode()
         addTextChangedListeners()
         observeViewModel()
     }
 
+
+    override fun onStart() {
+        super.onStart()
+        Log.d("LifecycleTest", "ShopItemFragment -> START")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("LifecycleTest", "ShopItemFragment -> RESUME")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("LifecycleTest", "ShopItemFragment -> PAUSE")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d("LifecycleTest", "ShopItemFragment -> STOP")
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.d("LifecycleTest", "ShopItemFragment -> DESTROY_VIEW")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("LifecycleTest", "ShopItemFragment -> DESTROY")
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        Log.d("LifecycleTest", "ShopItemFragment -> DETACH")
+    }
+
+    interface OnEditingCompleteListener {
+        fun onEditingComplete()
+    }
 
     private fun observeViewModel() {
         viewModel.errorInputName.observe(viewLifecycleOwner) {
@@ -62,7 +116,7 @@ class ShopItemFragment : Fragment() {
             binding.tilCount.error = message
         }
         viewModel.shouldCloseScreen.observe(viewLifecycleOwner) {
-            activity?.onBackPressed()
+            onEditingCompleteListener.onEditingComplete()
         }
     }
 
