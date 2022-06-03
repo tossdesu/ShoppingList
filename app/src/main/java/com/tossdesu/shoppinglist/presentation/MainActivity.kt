@@ -16,21 +16,14 @@ import com.tossdesu.shoppinglist.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingCompleteListener {
 
     private lateinit var binding: ActivityMainBinding
-    lateinit var viewModel: MainViewModel
-    lateinit var shopListAdapter: ShopListAdapter
-    private var shopItemFragmentContainer: FragmentContainerView? = null
+    private lateinit var viewModel: MainViewModel
+    private lateinit var shopListAdapter: ShopListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d("LifecycleTest", "MainActivity -> CREATE")
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        shopItemFragmentContainer = binding.shopItemContainer
-
-//        if (savedInstanceState != null) {
-//            supportFragmentManager.popBackStack()
-//        }
 
         initAdapter()
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
@@ -48,43 +41,12 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingCompleteList
         }
     }
 
-
-    override fun onStart() {
-        super.onStart()
-        Log.d("LifecycleTest", "MainActivity -> START")
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.d("LifecycleTest", "MainActivity -> RESUME")
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Log.d("LifecycleTest", "MainActivity -> PAUSE")
-    }
-
-    override fun onStop() {
-        super.onStop()
-        Log.d("LifecycleTest", "MainActivity -> STOP")
-    }
-
-    override fun onRestart() {
-        super.onRestart()
-        Log.d("LifecycleTest", "MainActivity -> RESTART")
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d("LifecycleTest", "MainActivity -> DESTROY")
-    }
-
     override fun onEditingComplete() {
         supportFragmentManager.popBackStack()
         Toast.makeText(this, "Complete", Toast.LENGTH_LONG).show()
     }
 
-    private fun isScreenPortraitMode() = shopItemFragmentContainer == null
+    private fun isScreenPortraitMode() = binding.shopItemContainer == null
 
     private fun launchFragment(fragment: Fragment) {
         supportFragmentManager.popBackStack()

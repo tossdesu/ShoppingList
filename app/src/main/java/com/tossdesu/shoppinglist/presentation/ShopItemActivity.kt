@@ -26,39 +26,6 @@ class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingComplete
         }
     }
 
-
-    override fun onStart() {
-        super.onStart()
-        Log.d("LifecycleTest", "ShopItemActivity -> START")
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.d("LifecycleTest", "ShopItemActivity -> RESUME")
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Log.d("LifecycleTest", "ShopItemActivity -> PAUSE")
-    }
-
-    override fun onStop() {
-        super.onStop()
-        Log.d("LifecycleTest", "ShopItemActivity -> STOP")
-    }
-
-    override fun onRestart() {
-        super.onRestart()
-        Log.d("LifecycleTest", "ShopItemActivity -> RESTART")
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d("LifecycleTest", "ShopItemActivity -> DESTROY")
-    }
-
-
-
     override fun onEditingComplete() {
         finish()
     }
