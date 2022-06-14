@@ -1,10 +1,7 @@
 package com.tossdesu.shoppinglist.presentation
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.tossdesu.shoppinglist.data.ShopListRepositoryImpl
 import com.tossdesu.shoppinglist.domain.AddShopItemUseCase
 import com.tossdesu.shoppinglist.domain.EditShopItemUseCase
@@ -41,10 +38,8 @@ class ShopItemViewModel(
     val shouldCloseScreen: LiveData<Unit>
         get() = _shouldCloseScreen
 
-    private val scope = CoroutineScope(Dispatchers.IO)
-
     fun getShopItem(shopItemId: Int) {
-        scope.launch {
+        viewModelScope.launch {
             val item = getShopItemUseCase.getShopItem(shopItemId)
             _shopItem.value = item
         }
@@ -55,7 +50,7 @@ class ShopItemViewModel(
         val count = parseCount(inputCount)
         val inputValid = validateInput(name, count)
         if (inputValid) {
-            scope.launch {
+            viewModelScope.launch {
                 val shopItem = ShopItem(name, count, true)
                 addShopItemUseCase.addShopItem(shopItem)
                 finishWork()
@@ -69,7 +64,7 @@ class ShopItemViewModel(
         val inputValid = validateInput(name, count)
         if (inputValid) {
             _shopItem.value?.let {
-                scope.launch {
+                viewModelScope.launch {
                     val item = it.copy(name = name, count = count)
                     editShopItemUseCase.editShopItem(item)
                     finishWork()
@@ -113,10 +108,5 @@ class ShopItemViewModel(
 
     private fun finishWork() {
         _shouldCloseScreen.value = Unit
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        scope.cancel()
     }
 }
