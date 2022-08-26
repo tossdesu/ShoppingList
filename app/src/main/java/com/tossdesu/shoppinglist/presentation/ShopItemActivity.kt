@@ -11,14 +11,16 @@ import com.tossdesu.shoppinglist.domain.ShopItem
 
 class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingCompleteListener {
 
-    private lateinit var binding: ActivityShopItemBinding
+    private val binding by lazy {
+        ActivityShopItemBinding.inflate(layoutInflater)
+    }
+
     private var screenMode = MODE_UNDEFINED
     private var shopItemId = ShopItem.UNDEFINED_ID
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d("LifecycleTest", "ShopItemActivity -> CREATE")
-        binding = ActivityShopItemBinding.inflate(layoutInflater)
         setContentView(binding.root)
         parseIntent()
         if (savedInstanceState == null) {

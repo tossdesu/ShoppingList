@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.tossdesu.shoppinglist.R
 import com.tossdesu.shoppinglist.databinding.FragmentShopItemBinding
 import com.tossdesu.shoppinglist.domain.ShopItem
+import javax.inject.Inject
 
 class ShopItemFragment : Fragment() {
 
@@ -20,13 +21,24 @@ class ShopItemFragment : Fragment() {
     private val binding: FragmentShopItemBinding
         get() = _binding ?: throw RuntimeException("FragmentShopItemBinding = null")
 
-    private lateinit var viewModel: ShopItemViewModel
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
+
+    private val viewModel by lazy {
+        ViewModelProvider(this, viewModelFactory)[ShopItemViewModel::class.java]
+    }
+
+    private val component by lazy {
+        (requireActivity().application as ShoppingListApp).component
+    }
+
     private lateinit var onEditingCompleteListener: OnEditingCompleteListener
 
     private var screenMode: String = MODE_UNDEFINED
     private var shopItemId: Int = ShopItem.UNDEFINED_ID
 
     override fun onAttach(context: Context) {
+        component.inject(this)
         super.onAttach(context)
         Log.d("LifecycleTest", "ShopItemFragment -> ATTACH")
         if (context is OnEditingCompleteListener) {
@@ -55,7 +67,7 @@ class ShopItemFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d("LifecycleTest", "ShopItemFragment -> VIEW_CREATED")
-        viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
+
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
         launchScreenMode()
